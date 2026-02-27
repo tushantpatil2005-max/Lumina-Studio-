@@ -1,0 +1,208 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  Terminal, 
+  Sparkles, 
+  Layout, 
+  Github, 
+  Linkedin, 
+  Mail, 
+  ArrowUpRight,
+  Cpu,
+  Layers,
+  Zap,
+  Code2,
+  MessageSquare,
+  Send,
+  Loader2
+} from 'lucide-react';
+import { Card, Button } from './components/UI';
+import { generateCreativeContent } from './services/gemini';
+import ReactMarkdown from 'react-markdown';
+import { cn } from './utils';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'ai' | 'projects'>('dashboard');
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiType, setAiType] = useState<'code' | 'copy' | 'idea'>('code');
+
+  const handleGenerate = async () => {
+    if (!aiPrompt.trim()) return;
+    setIsGenerating(true);
+    const response = await generateCreativeContent(aiPrompt, aiType);
+    setAiResponse(response || '');
+    setIsGenerating(false);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Navigation */}
+      <nav className="sticky top-0 z-50 border-b border-white/5 bg-black/50 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-black" />
+            </div>
+            <span className="font-bold text-xl tracking-tighter">LUMINA</span>
+          </div>
+          
+          <div className="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/10">
+            {(['dashboard', 'ai', 'projects'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={cn(
+                  "px-4 py-1.5 rounded-full text-sm font-medium transition-all capitalize",
+                  activeTab === tab ? "bg-white text-black" : "text-zinc-400 hover:text-white"
+                )}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" className="p-2 px-2">
+              <Github className="w-5 h-5" />
+            </Button>
+            <Button className="hidden sm:block">Hire Me</Button>
+          </div>
+        </div>
+      </nav>
+
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-12">
+        <AnimatePresence mode="wait">
+          {activeTab === 'dashboard' && (
+            <motion.div
+              key="dashboard"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="space-y-8"
+            >
+              {/* Hero Section */}
+              <section className="relative py-20 overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-900 to-black border border-white/10 p-12">
+                <div className="relative z-10 max-w-2xl">
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-zinc-400 mb-6"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    AVAILABLE FOR NEW PROJECTS
+                  </motion.div>
+                  <h1 className="text-6xl md:text-7xl font-bold tracking-tighter mb-6 leading-[0.9]">
+                    Engineering <span className="text-zinc-500 italic font-serif">Digital</span> Excellence.
+                  </h1>
+                  <p className="text-xl text-zinc-400 mb-8 max-w-lg leading-relaxed">
+                    Senior Frontend Engineer specializing in high-performance React applications and AI-driven user experiences.
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                    <Button className="h-12 px-8 text-lg">View Portfolio</Button>
+                    <Button variant="secondary" className="h-12 px-8 text-lg">Read Resume</Button>
+                  </div>
+                </div>
+                
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.1),transparent_70%)]" />
+                  <div className="grid grid-cols-8 gap-1 h-full">
+                    {Array.from({ length: 64 }).map((_, i) => (
+                      <div key={i} className="border-r border-b border-white/5" />
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { label: 'Projects Delivered', value: '42+', icon: <Layers className="w-5 h-5" /> },
+                  { label: 'Code Quality', value: '99.9%', icon: <Cpu className="w-5 h-5" /> },
+                  { label: 'Performance Score', value: '100', icon: <Zap className="w-5 h-5" /> },
+                  { label: 'Client Satisfaction', value: '5/5', icon: <MessageSquare className="w-5 h-5" /> },
+                ].map((stat, i) => (
+                  <Card key={i} title={stat.value} subtitle={stat.label} icon={stat.icon} />
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'ai' && (
+            <motion.div
+              key="ai"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-[calc(100vh-12rem)]"
+            >
+              <div className="lg:col-span-1 space-y-6">
+                <Card title="AI Creative Studio" subtitle="Generate assets with Gemini 2.5">
+                  <div className="space-y-4">
+                    <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/10">
+                      {(['code', 'copy', 'idea'] as const).map((type) => (
+                        <button
+                          key={type}
+                          onClick={() => setAiType(type)}
+                          className={cn(
+                            "flex-1 py-2 text-xs font-bold rounded-lg transition-all capitalize",
+                            aiType === type ? "bg-white text-black" : "text-zinc-500 hover:text-white"
+                          )}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+                    <textarea
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      placeholder={`Describe the ${aiType} you want to generate...`}
+                      className="w-full h-40 bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 transition-all resize-none"
+                    />
+                    <Button 
+                      onClick={handleGenerate} 
+                      disabled={isGenerating}
+                      className="w-full h-12 flex items-center justify-center gap-2"
+                    >
+                      {isGenerating ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          Generate {aiType}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </Card>
+              </div>
+
+              <div className="lg:col-span-2">
+                <Card className="h-full flex flex-col p-0 overflow-hidden">
+                  <div className="p-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+                    <div className="flex items-center gap-2">
+                      <Terminal className="w-4 h-4 text-zinc-500" />
+                      <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest">Output Terminal</span>
+                    </div>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-8 prose prose-invert max-w-none">
+                    {aiResponse ? (
+                      <ReactMarkdown>{aiResponse}</ReactMarkdown>
+                    ) : (
+                      <div className="h-full flex flex-col items-center justify-center text-zinc-600 space-y-4">
+                        <Sparkles className="w-12 h-12 opacity-20" />
+                        <p className="text-sm font-medium">Awaiting creative input...</p>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </main>
+    </div>
+  );
+}
