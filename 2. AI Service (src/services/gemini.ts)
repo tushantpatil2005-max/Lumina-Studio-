@@ -1,0 +1,27 @@
+import { GoogleGenAI } from "@google/genai";
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+
+export async function generateCreativeContent(prompt: string, type: 'code' | 'copy' | 'idea') {
+  const systemInstructions = {
+    code: "You are an expert senior frontend engineer. Provide clean, modern, and performant React/TypeScript code snippets.",
+    copy: "You are a world-class conversion copywriter. Write compelling, punchy, and professional marketing copy.",
+    idea: "You are a creative product strategist. Generate innovative and technically feasible product ideas."
+  };
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        systemInstruction: systemInstructions[type],
+        temperature: 0.7,
+      },
+    });
+
+    return response.text;
+  } catch (error) {
+    console.error("Gemini API Error:", error);
+    return "Failed to generate content.";
+  }
+}
