@@ -1,0 +1,51 @@
+import React from 'react';
+import { motion } from 'motion/react';
+import { cn } from '../utils';
+
+interface CardProps {
+  children?: React.ReactNode;
+  className?: string;
+  title?: string;
+  subtitle?: string;
+  icon?: React.ReactNode;
+}
+
+export const Card = ({ children, className, title, subtitle, icon }: CardProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className={cn("glass-card p-6", className)}
+    >
+      {(title || icon) && (
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            {title && <h3 className="text-lg font-semibold text-white">{title}</h3>}
+            {subtitle && <p className="text-sm text-zinc-500">{subtitle}</p>}
+          </div>
+          {icon && <div className="p-2 bg-white/5 rounded-lg text-zinc-400">{icon}</div>}
+        </div>
+      )}
+      {children}
+    </motion.div>
+  );
+};
+
+export const Button = ({ 
+  children, 
+  className, 
+  variant = 'primary',
+  ...props 
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'ghost' }) => {
+  const variants = {
+    primary: "bg-white text-black hover:bg-zinc-200",
+    secondary: "bg-zinc-800 text-white hover:bg-zinc-700 border border-white/10",
+    ghost: "bg-transparent text-zinc-400 hover:text-white hover:bg-white/5"
+  };
+
+  return (
+    <button className={cn("neo-button", variants[variant], className)} {...props}>
+      {children}
+    </button>
+  );
+};
